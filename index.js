@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 require("dotenv").config();
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 //midleWare
 app.use(cors());
@@ -202,6 +203,24 @@ async function run() {
       res.send(result);
     });
 
+    //NOTE - Payment API
+    app.post("/create-payment-intent", async (req, res) => {
+      try {
+        const { price } = req.body;
+        const amount = parseInt(price * 100);
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount: amount,
+          currency: "usd",
+          payment_method_types: ["card"],
+        });
+        res.send({
+          clientSecret: paymentIntent.client_secret,
+        });
+      } catch (error) {
+        console.error("Error fetching rooms:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
     // Send a ping to confirm a successful connection
 
     await client.db("admin").command({ ping: 1 });
