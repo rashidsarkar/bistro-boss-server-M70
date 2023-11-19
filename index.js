@@ -218,7 +218,7 @@ async function run() {
         });
       } catch (error) {
         console.error("Error fetching rooms:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send(`Internal Server Error: ${error.message}`);
       }
     });
     // Send a ping to confirm a successful connection
