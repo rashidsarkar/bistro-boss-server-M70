@@ -208,6 +208,7 @@ async function run() {
       try {
         const { price } = req.body;
         const amount = parseInt(price * 100);
+        console.log(amount, "amount on instand");
         const paymentIntent = await stripe.paymentIntents.create({
           amount: amount,
           currency: "usd",
@@ -217,7 +218,7 @@ async function run() {
           clientSecret: paymentIntent.client_secret,
         });
       } catch (error) {
-        console.error("Error fetching rooms:", error);
+        console.error("Error fetching payment:", error.message);
         res.status(500).send(`Internal Server Error: ${error.message}`);
       }
     });
