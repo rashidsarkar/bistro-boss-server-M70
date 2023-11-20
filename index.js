@@ -29,6 +29,7 @@ async function run() {
     const menuCollection = client.db("bistroDB").collection("menu");
     const reviewsCollection = client.db("bistroDB").collection("reviews");
     const cartCollection = client.db("bistroDB").collection("cart");
+    const paymentCollection = client.db("bistroDB").collection("payments");
     // await client.connect();
 
     //NOTE - MidleWare
@@ -219,6 +220,27 @@ async function run() {
         });
       } catch (error) {
         console.error("Error fetching payment:", error.message);
+        res.status(500).send(`Internal Server Error: ${error.message}`);
+      }
+    });
+
+    // payment related API
+    app.post("/payments", async (req, res) => {
+      try {
+        const payment = req.body;
+        const paymentResult = await paymentCollection.insertOne(payment);
+        //careFully delet eatch item from the cart
+        console.log("payment info ", payment);
+        const query = {
+          _id: {
+            $in: payment.cartIDs.map((id) => new ObjectId(id)),
+          },
+        };
+
+        const deleteResult = await cartCollection.deleteMany(query);
+        res.send({ paymentResult, deleteResult });
+      } catch (error) {
+        console.error("Error  payment:", error.message);
         res.status(500).send(`Internal Server Error: ${error.message}`);
       }
     });
