@@ -223,6 +223,14 @@ async function run() {
         res.status(500).send(`Internal Server Error: ${error.message}`);
       }
     });
+    app.get("/paymentHistory", verifyToken, async (req, res) => {
+      const query = { email: req.params.email };
+      if (req.params.email !== req.decoded.email) {
+        return res.status(403).json({ message: "FORBIDDEN " });
+      }
+      const result = await paymentCollection.find().toArray();
+      res.send(result);
+    });
 
     // payment related API
     app.post("/payments", async (req, res) => {
