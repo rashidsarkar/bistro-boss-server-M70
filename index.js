@@ -225,13 +225,19 @@ async function run() {
     });
     app.get("/paymentHistory/:email", verifyToken, async (req, res) => {
       try {
+        // let userEmail = req.params.email;
+        // const query = { email: userEmail };
+        // if (req.params.email !== req.decoded.email) {
+        //   return res.status(403).json({ message: "FORBIDDEN " });
+        // }
+        // const result = await paymentCollection.find(query);
+        // res.send(result);
         let userEmail = req.params.email;
         const query = { email: userEmail };
-        if (req.params.email !== req.decoded.email) {
-          return res.status(403).json({ message: "FORBIDDEN " });
-        }
-
-        const result = await paymentCollection.find(query);
+        // if (req.params.email !== req.decoded.email) {
+        //   return res.status(403).json({ message: "FORBIDDEN " });
+        // }
+        const result = await paymentCollection.find().toArray();
         res.send(result);
       } catch (error) {
         console.error("Error fetching payment History:", error.message);
